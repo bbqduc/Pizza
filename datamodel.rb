@@ -1,0 +1,87 @@
+require './datamapper_setup'
+
+class Customer
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :username,	String, :required => true, :unique => true
+	property :passhash,	String, :required => true
+	property :salt,		String, :required => true
+	property :name,		String, :required => true
+	property :address,	String, :required => true
+	property :phone,	String, :required => true
+
+	has n, :orders
+end
+
+class Ingredient
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :name,		String, :required => true, :unique => true
+	property :price,	Decimal, :required => true, :scale => 0, :precision => 5
+
+	has n, :ingredient_amounts
+	has n, :extras
+end
+
+class Product
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :name,		String, :required => true, :unique => true
+	property :price,	Decimal, :required => true, :scale => 0, :precision => 5
+
+	has n, :ingredient_amounts
+	has n, :product_amounts
+
+end
+
+class Order
+	include DataMapper::Resource
+	
+	property :id,		Serial
+	property :orderDate,	DateTime, :required => true
+	property :deliveryDate,	DateTime
+	property :totalPrice,	Decimal, :required => true, :scale => 0, :precision => 5
+
+	belongs_to :customer
+
+	has n, :product_amounts
+end
+
+class ProductAmount
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :amount,	Integer
+
+	belongs_to :order
+	belongs_to :product
+
+	has n, :extras
+
+end
+
+class IngredientAmount
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :amount,	Integer
+
+	belongs_to :ingredient
+	belongs_to :product
+end
+
+class Extra
+	include DataMapper::Resource
+
+	property :id,		Serial
+	property :amount,	Integer
+
+	belongs_to :ingredient
+	belongs_to :product_amount
+end
+
+DataMapper.finalize
+DataMapper.auto_migrate!

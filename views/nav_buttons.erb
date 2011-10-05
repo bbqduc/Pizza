@@ -1,0 +1,11 @@
+<li><a href="/">Valikoima</a></li>
+<li><a href="/basket">Ostoskori</a></li>
+<%= if(session[@name] != nil) then
+	    "<li><a href='/account'>#{session[@name]}</a></li>
+	    <li><a href='/logout'>Kirjaudu ulos</a></li>"
+    else
+	    '<li><a href="/login">
+	    Kirjaudu sisaan</a></li>
+		<li><a href="/register">Rekisteroidy'
+    end%>
+</a></li>

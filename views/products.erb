@@ -1,0 +1,9 @@
+<table border="1">
+	<tr><td>Product</td><td>Price</td></tr>
+	<% @products.each do |product| %>
+		<tr>
+			<td><%= product.attributes[:name] %></td>
+			<td><%= product.attributes[:price].to_s("F") %></td>
+		</tr>
+	<% end %>
+</table>

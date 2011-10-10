@@ -3,17 +3,22 @@
 		<title>PizzaPalvelu</title>
 	</head>
 	<body>
-		<li><a href="/">Valikoima</a></li>
-		<li><a href="/basket">Ostoskori</a></li>
-		<%= if(session[@name] != nil) then
-			    "<li><a href='/account'>#{session[@name]}</a></li>
-	    <li><a href='/logout'>Kirjaudu ulos</a></li>"
-		    else
-			    '<li><a href="/login">
-	    Kirjaudu sisaan</a></li>
-		<li><a href="/register">Rekisteroidy'
-		    end%>
-	    </a></li>
-	    <%= yield %>
-    </body>
+		<% if(session[@name] == 'admin') then %>
+			<a href="/orders">Orders</a>
+			<a href="/manage">Manage</a>
+			<a href="/logout">Logout</a>
+		<% else %>
+			<a href="/">Pizzas</a>
+			<a href="/basket">Shopping Cart</a>
+			<% if(session[@name] != nil) then %>
+				<a href='/account'><%= session[@name] %></a>
+				<a href='/logout'>Logout</a>
+			<% else %>
+				<a href="/login">Login</a>
+				<a href="/register">Register</a>
+				<% end %>
+		<% end %>
+		<br/><br/><br/><br/>
+		<%= yield %>
+	</body>
 </html>

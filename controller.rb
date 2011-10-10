@@ -2,6 +2,12 @@ require './datamodel'
 require 'digest/sha2'
 
 module Controller
+	def Controller.ValidateAdmin(name, password)
+		if name != 'admin'
+			return false
+		end
+		return Controller.ValidateUser(name, password)
+	end
 
 	def Controller.ValidateUser(name, password)
 		user = Customer.first(:username => name)
@@ -41,6 +47,14 @@ module Controller
 		return true
 	end
 
+	def Controller.getProductID(name)
+		return Product.first(:name => name).attributes[:id]
+	end
+
+	def Controller.getIngredientID(name)
+		return Ingredient.first(:name => name).attributes[:id]
+	end
+
 	def Controller.addProduct(name, price)
 		product = Product.first(:name => name)
 		if product != nil
@@ -55,21 +69,45 @@ module Controller
 		return true
 	end
 
-	def Controller.addIngredients(productID, ingredientID, amount)
+	def Controller.setIngredientAmount(productID, ingredientID, amount)
 		product = Product.get(productID)
 		ingredient = Ingredient.get(ingredientID)
-		product.ingredients.push()
+		ingredient_amounts = IngredientAmount.get(:product => product, :ingredient => ingredient)
+		if(ingredient_amounts == nil)
+			ingredient_amounts = IngredientAmount.new;
+			ingredient_amounts.attributes = {
+				:product => product,
+				:ingredient => ingredient,
+				:amount => amount
+			}
+			ingredient_amounts.save
+		end
 	end
 
-	def Controller.getIngredients(productID)
-		product = Product.get(productID)
-		return product.ingredients
+	def Controller.addIngredient(name, price)
+		ingredient = Ingredient.first(:name => name)
+		if ingredient != nil
+			return false
+		end
+		ingredient = Ingredient.new
+		ingredient.attributes = {
+			:name => name,
+			:price => price
+		}
+		ingredient.save
+		return true
+	end
 
+	def Controller.getIngredientAmounts(productID)
+		product = Product.get(productID)
+		return product.ingredient_amounts
 	end
 
 	def Controller.getProducts
 		return Product.all
 	end
 
-
+	def Controller.getOpenOrders
+		return
+	end
 end

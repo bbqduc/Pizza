@@ -41,8 +41,8 @@ class Order
 	include DataMapper::Resource
 	
 	property :id,		Serial
-	property :orderDate,	DateTime, :required => true
-	property :deliveryDate,	DateTime
+	property :orderDate,	DateTime, :required => true, :index => true
+	property :deliveryDate,	DateTime, :index => true
 	property :totalPrice,	Decimal, :required => true, :scale => 0, :precision => 5
 
 	belongs_to :customer
@@ -84,4 +84,4 @@ class Extra
 end
 
 DataMapper.finalize
-DataMapper.auto_migrate!
+DataMapper.auto_upgrade!

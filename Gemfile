@@ -10,5 +10,5 @@ group :development do
 end
 
 group :production do
-	gem "dm-postgres-adapte'"
+	gem "dm-postgres-adapter"
 end

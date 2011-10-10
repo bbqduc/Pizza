@@ -1,23 +1,7 @@
+<h1>Products</h1>
 <table border="1">
 	<tr><td>Product</td><td>Ingredients</td><td>Price</td></tr>
 	<% @products.each do |product| %>
-		<tr>
-			<td><%= product.attributes[:name] %></td>
-			<td>
-				<% product.ingredient_amounts.each do |x| %>
-					<% if x.attributes[:amount] > 1 %>
-						<%= x.attributes[:amount].to_s + "x" %>
-					<% end %>
-					<%= x.ingredient.attributes[:name] %> ,
-				<% end %>
-			</td>
-			<td><%= product.attributes[:price].to_s("F") %>$</td>
-			<% if(session[@name] != 'admin') then %>
-				<td><a href=/basket/<%= product.attributes[:id] %>>Add</a></td>
-			<% else %>
-				<td><a href=/edit/<%= product.attributes[:id] %>>Edit</a></td>
-				<td><a href=/delete/<%= product.attributes[:id] %>>Delete</a></td>
-			<% end %>
-		</tr>
+		<%= erb(:product, :layout => false, :locals => { :product => product } ) %>
 	<% end %>
 </table>

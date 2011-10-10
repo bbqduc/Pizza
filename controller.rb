@@ -107,7 +107,17 @@ module Controller
 		return Product.all
 	end
 
-	def Controller.getOpenOrders
-		return
+	def Controller.getIngredients
+		return Ingredient.all
 	end
+
+	def Controller.getOpenOrders
+		return Order.all(:deliveryDate => nil, :order => [:orderDate.desc])
+	end
+
+	def Controller.getClosedOrders
+		return Order.all(:conditions => [":deliveryDate IS NOT NULL"], :order => [:orderDate.desc])
+	end
+
+
 end

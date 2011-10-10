@@ -42,9 +42,7 @@ module Controller
 			:salt => salt
 		}
 
-		newcustomer.save
-
-		return true
+		return newcustomer.save
 	end
 
 	def Controller.getProductID(name)
@@ -65,8 +63,7 @@ module Controller
 			:name => name,
 			:price => price
 		}
-		newproduct.save
-		return true
+		return newproduct.save
 	end
 
 	def Controller.setIngredientAmount(productID, ingredientID, amount)

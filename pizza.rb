@@ -71,6 +71,7 @@ post '/register' do
 	else
 		"Failure!"
 	end
+	redirect '/'
 end
 
 get '/login' do

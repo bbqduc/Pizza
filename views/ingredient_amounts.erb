@@ -1,0 +1,3 @@
+<% @ingredients.each do |ingredient| %>
+	<%= erb(:ingredient_amount, :layout => false, :locals => {:ingredient => ingredient, :product => product}) %>
+<% end %>

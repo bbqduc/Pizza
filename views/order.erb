@@ -1,0 +1,12 @@
+<tr>
+	<td><a href="/profile/<%= order.customer.attributes[:username] %>"><%= order.customer.attributes[:name] %></a></td>
+	<td><%= order.attributes[:orderDate] %></td>
+	<td><a href="/order/<%= order.attributes[:id] %>"<%= order.attributes[:totalPrice] %></a></td>
+	<% if(order.attributes[:deliveryDate] != nil) then %>
+		<td><%= order.attributes[:deliveryDate] %></td>
+	<% else %>
+		<% if(session[:name] == 'admin') then %>
+			<td><a href="/deliver/<%= order.attributes[:id] %>">Enter</a></td>
+		<% end %>
+	<% end %>
+</tr>

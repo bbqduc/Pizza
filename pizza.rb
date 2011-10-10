@@ -16,7 +16,7 @@ class PizzaPalvelu < Sinatra::Base
 end
 
 before '/admin/*' do
-#	authenticate!
+	#	authenticate!
 end
 
 get '/admin' do
@@ -42,6 +42,14 @@ get '/admin/addingr' do
 	erb :addingredient, :locals => {:ingredient => nil}, :layout => :adminlayout
 end
 
+post '/admin/addingr' do
+	if Controller.addIngredient(params[:ingrname], params[:ingrprice]) then
+		"Success!"
+	else
+		"Failure!"
+	end
+end
+
 get '/admin/manage' do 
 	@products = Controller.getProducts
 	@ingredients = Controller.getIngredients
@@ -58,7 +66,7 @@ get '/register' do
 end
 
 post '/register' do
-	if Controller.AddUser(params[:username], params[:password], params[:name], params[:address], params[:phone])
+	if Controller.AddUser(params[:username], params[:password], params[:name], params[:address], params[:phone]) then
 		"Success!"
 	else
 		"Failure!"
@@ -70,7 +78,7 @@ get '/login' do
 end
 
 post '/login' do
-	if Controller.ValidateUser(params[:username], params[:password])
+	if Controller.ValidateUser(params[:username], params[:password]) then
 		session[@name] = params[:username]
 		redirect '/'
 	else

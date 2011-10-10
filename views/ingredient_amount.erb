@@ -1,0 +1,3 @@
+<tr>
+	<td><%= ingredient.attributes[:name] %></td>
+	<td><input type="text" name="ingr_<%= ingredient.attributes[:id] %>" value="<%= product != nil ? product.ingredient_amounts[:ingredient => ingredient].attributes[:amount] : 0 %>"></td> </tr>

@@ -1,0 +1,6 @@
+<table border="1">
+	<tr><td>Customer</td><td>Ordered</td><td>Price</td><td>Delivered</td></tr>
+	<% orders.each do |order| %>
+		<%= erb(:order, :layout => false, :locals => { :order => order } ) %>
+	<% end %>
+</table>

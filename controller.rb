@@ -94,8 +94,7 @@ module Controller
 			:name => name,
 			:price => price
 		}
-		ingredient.save
-		return true
+		return ingredient.save
 	end
 
 	def Controller.getIngredientAmounts(productID)

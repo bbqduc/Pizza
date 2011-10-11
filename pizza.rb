@@ -70,9 +70,12 @@ get '/register' do
 end
 
 post '/register' do
-	"Terve!"
-#	 Controller.AddUser(params[:username], params[:password], params[:name], params[:address], params[:phone])
-#	redirect '/'
+	if Controller.AddUser(params[:username], params[:password], params[:name], params[:address], params[:phone]) then
+		"Success!"
+	else
+		"Failure!"
+
+	redirect '/'
 end
 
 get '/login' do

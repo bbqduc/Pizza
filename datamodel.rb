@@ -5,8 +5,8 @@ class Customer
 
 	property :id,		Serial
 	property :username,	String, :required => true, :unique => true
-	property :passhash,	String, :required => true
-	property :salt,		String, :required => true
+	property :passhash,	String, :required => true, :length => 128
+	property :salt,		String, :required => true, :length => 64
 	property :name,		String, :required => true
 	property :address,	String, :required => true
 	property :phone,	String, :required => true
@@ -84,4 +84,4 @@ class Extra
 end
 
 DataMapper.finalize
-DataMapper.auto_upgrade!
+DataMapper.auto_migrate!

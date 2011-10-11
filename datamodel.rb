@@ -84,4 +84,4 @@ class Extra
 end
 
 DataMapper.finalize
-DataMapper.auto_migrate!
+DataMapper.auto_upgrade!

@@ -16,7 +16,7 @@ class PizzaPalvelu < Sinatra::Base
 end
 
 #before '/admin/*' do
-	#	authenticate!
+#	authenticate!
 #end
 
 get '/admin' do
@@ -74,6 +74,7 @@ post '/register' do
 		"Success!"
 	else
 		"Failure!"
+	end
 
 	redirect '/'
 end

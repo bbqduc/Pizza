@@ -19,7 +19,7 @@ class Ingredient
 
 	property :id,		Serial
 	property :name,		String, :required => true, :unique => true
-	property :price,	Decimal, :required => true, :scale => 0, :precision => 5
+	property :price,	Decimal, :required => true, :scale => 2, :precision => 5
 
 	has n, :ingredient_amounts
 	has n, :extras
@@ -30,7 +30,7 @@ class Product
 
 	property :id,		Serial
 	property :name,		String, :required => true, :unique => true
-	property :price,	Decimal, :required => true, :scale => 0, :precision => 5
+	property :price,	Decimal, :required => true, :scale => 2, :precision => 5
 
 	has n, :ingredient_amounts
 	has n, :product_amounts
@@ -43,7 +43,7 @@ class Order
 	property :id,		Serial
 	property :orderDate,	DateTime, :required => true, :index => true
 	property :deliveryDate,	DateTime, :index => true
-	property :totalPrice,	Decimal, :required => true, :scale => 0, :precision => 5
+	property :totalPrice,	Decimal, :required => true, :scale => 2, :precision => 5
 
 	belongs_to :customer
 

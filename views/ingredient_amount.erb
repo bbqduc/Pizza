@@ -1,3 +1,7 @@
 <tr>
 	<td><%= ingredient.attributes[:name] %></td>
-	<td><input type="text" name="ingr_<%= ingredient.attributes[:id] %>" value="<%= product != nil ? product.ingredient_amounts[:ingredient => ingredient].attributes[:amount] : 0 %>"></td> </tr>
+	<% if price then %>
+		<td><%= ingredient.attributes[:price].to_s('F') %>$</td>
+	<% end %>
+	<td><input type="text" name="ingr_<%= ingredient.attributes[:id] %>" value="<%= product != nil ? product.ingredient_amounts[:ingredient => ingredient].attributes[:amount] : 0 %>"></td> 
+</tr>

@@ -45,8 +45,16 @@ module Controller
 		return newcustomer.save
 	end
 
+	def Controller.getCustomerByUserName(username)
+		return Customer.first(:username => username)
+	end
+
 	def Controller.getProductID(name)
 		return Product.first(:name => name).attributes[:id]
+	end
+
+	def Controller.getProductByID(id)
+		return Product.get(id)
 	end
 
 	def Controller.getIngredientID(name)
@@ -112,7 +120,7 @@ module Controller
 	end
 
 	def Controller.getClosedOrders
-		return Order.all(:conditions => [":deliveryDate IS NOT NULL"], :order => [:orderDate.desc])
+		return Order.all(:conditions => ["delivery_date IS NOT NULL"], :order => [:orderDate.desc])
 	end
 
 

@@ -10,7 +10,7 @@
 	</td>
 	<td><%= product.attributes[:price].to_s("F") %>$</td>
 	<% if(session[@name] != 'admin') then %>
-		<td><a href=/basket/<%= product.attributes[:id] %>>Add</a></td>
+		<td><a href=/basket/add/<%= product.attributes[:id] %>>Add</a></td>
 	<% else %>
 		<td><a href=/edit/<%= product.attributes[:id] %>>Edit</a></td>
 		<td><a href=/delete/<%= product.attributes[:id] %>>Delete</a></td>

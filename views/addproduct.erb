@@ -1,12 +1,12 @@
-<form action="/addproduct" method="post">
+<form action="/admin/addproduct" method="post">
 	<table>
 		<tr>
 			<td>Product name</td><td><input type="text" name="productname"></td>
 		</tr>
 		<tr>
-			<td>Product price</td><td><input type="text" name="productname"></td>
+			<td>Product price</td><td><input type="text" name="productprice"></td>
 		</tr>
-		<%= erb(:ingredient_amounts, :layout => false, :locals => {:product => product}) %>
+		<%= erb(:ingredient_amounts, :layout => false, :locals => {:product => product, :prices => false}) %>
 		<tr>
 			<td></td>
 			<td><input type="submit" value="Done"></td>

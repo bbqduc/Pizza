@@ -176,10 +176,6 @@ class PizzaPalvelu < Sinatra::Base
 			end
 		end
 
-		if !Controller.ValidatePriceString(params[:productprice])
-			validinput = false
-		end
-
 		if !validinput then
 			if session[:name] != nil then
 				erb :displaymessage, :layout => :userlayout, :locals => {:username => session[:name], :message => "Invalid field entries detected!", :backlink => "/basket"}

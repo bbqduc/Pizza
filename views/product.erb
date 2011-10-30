@@ -1,11 +1,12 @@
 <tr>
 	<td><%= product.attributes[:name] %></td>
 	<td>
-		<% product.ingredient_amounts.each do |x| %>
-			<% if x.attributes[:amount] > 1 then %>
-				<%= x.attributes[:amount].to_s + "x" %>
+		<% product.ingredient_amounts.each_index do |x| %>
+			<% if product.ingredient_amounts[x].attributes[:amount] > 1 then %>
+				<%= product.ingredient_amounts[x].attributes[:amount].to_s + "x" %>
 			<% end %>
-			<%= x.ingredient.attributes[:name] %> ,
+			<%= product.ingredient_amounts[x].ingredient.attributes[:name] %>
+			<%= if x != product.ingredient_amounts.size-1 then " ," end %>
 		<% end %>
 	</td>
 	<td><%= product.attributes[:price].to_s("F") %>$</td>

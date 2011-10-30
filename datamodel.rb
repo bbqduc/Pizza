@@ -20,6 +20,7 @@ class Ingredient
 	property :id,		Serial
 	property :name,		String, :required => true, :unique => true
 	property :price,	Decimal, :required => true, :scale => 2, :precision => 5
+	property :available,	Boolean, :required => true, :index => true
 
 	has n, :ingredient_amounts
 	has n, :extras
@@ -31,6 +32,7 @@ class Product
 	property :id,		Serial
 	property :name,		String, :required => true, :unique => true
 	property :price,	Decimal, :required => true, :scale => 2, :precision => 5
+	property :available,	Boolean, :required => true, :index => true
 
 	has n, :ingredient_amounts
 	has n, :product_amounts
@@ -84,4 +86,4 @@ class Extra
 end
 
 DataMapper.finalize
-DataMapper.auto_migrate!
+DataMapper.auto_upgrade!

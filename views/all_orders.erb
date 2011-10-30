@@ -1,6 +1,6 @@
 <h1>View orders</h1>
 <h2>Open orders</h2>
-<%= erb(:orders, :layout => false, :locals => {:orders => @open_orders })  %>
+<%= erb(:orders, :layout => false, :locals => {:orders => @open_orders, :username => username })  %>
 <br/>
 <h2>Closed orders</h2>
-<%= erb(:orders, :layout => false, :locals => {:orders => @closed_orders })  %>
+<%= erb(:orders, :layout => false, :locals => {:orders => @closed_orders, :username => username })  %>

@@ -2,17 +2,17 @@
 	<td><%= product.attributes[:name] %></td>
 	<td>
 		<% product.ingredient_amounts.each do |x| %>
-			<% if x.attributes[:amount] > 1 %>
+			<% if x.attributes[:amount] > 1 then %>
 				<%= x.attributes[:amount].to_s + "x" %>
 			<% end %>
 			<%= x.ingredient.attributes[:name] %> ,
 		<% end %>
 	</td>
 	<td><%= product.attributes[:price].to_s("F") %>$</td>
-	<% if(session[@name] != 'admin') then %>
+	<% if(username != 'admin') then %>
 		<td><a href=/basket/add/<%= product.attributes[:id] %>>Add</a></td>
 	<% else %>
-		<td><a href=/edit/<%= product.attributes[:id] %>>Edit</a></td>
-		<td><a href=/delete/<%= product.attributes[:id] %>>Delete</a></td>
+		<td><a href=/admin/edit/<%= product.attributes[:id] %>>Edit</a></td>
+		<td><a href="/admin/toggleavail/<%= product.attributes[:id] %>">Make <%= if product.available then "unavailable" else "available" end%></a></td>
 	<% end %>
 </tr>

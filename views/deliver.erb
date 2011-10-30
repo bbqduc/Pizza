@@ -1,0 +1,12 @@
+<form action="/admin/deliver/<%= orderid %>" method="post">
+	<table>
+		<tr>
+			<td>Delivery date (YYYY-MM-DD hh:mm:ss)</td>
+			<td><input type="text" value="<%= Controller.getTimeString(Time.now) %>" name="deliverydate"</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Done"></td>
+		</tr>
+	</table>
+</form>

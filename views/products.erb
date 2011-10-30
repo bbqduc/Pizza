@@ -2,6 +2,6 @@
 <table border="1">
 	<tr><td>Product</td><td>Ingredients</td><td>Price</td></tr>
 	<% @products.each do |product| %>
-		<%= erb(:product, :layout => false, :locals => { :product => product } ) %>
+		<%= erb(:product, :layout => false, :locals => { :product => product, :username => username } ) %>
 	<% end %>
 </table>

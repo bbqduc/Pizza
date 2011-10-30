@@ -1,0 +1,22 @@
+<table border=1>
+	<tr>
+		<td>Product</td><td>Extras</td><td>Amount</td>
+	</tr>
+	<% order.product_amounts.each do |i| %>
+		<tr>
+			<td><%= i.product.attributes[:name] %></td>
+			<td><% i.extras.each do |extra| %>
+					<% if extra.attributes[:amount] > 1 then %>
+						<%= extra.attributes[:amount].to_s + "x" %>
+					<% end %>
+					<%= extra.ingredient.attributes[:name] %>
+				<% end %>
+			</td>
+			<td><%= i.amount.to_s %></td>
+		</tr>
+	<% end %>
+	<tr>
+		<td>Total</td>
+		<td><%= order.attributes[:totalPrice].to_s("F") %>$</td>
+	</tr>
+</table>

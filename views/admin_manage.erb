@@ -1,5 +1,5 @@
 <h1>Manage products</h1>
 <a href="/admin/addproduct">New product</a>
 <a href="/admin/addingr">New ingredient</a>
-<%= erb(:products, :layout => false)  %>
-<%= erb(:ingredients, :layout => false) %>
+<%= erb(:products, :layout => false, :locals => {:username => username})  %>
+<%= erb(:ingredients, :layout => false, :locals => {:username => username}) %>

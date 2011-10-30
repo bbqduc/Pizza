@@ -5,7 +5,7 @@
 	<body>
 		<a href="/">Pizzas</a>
 		<a href="/basket">Shopping Cart</a>
-		<a href='/account'><%= session[@name] %></a>
+		<a href='/profile/<%=username%>'><%= username %></a>
 		<a href='/logout'>Logout</a>
 		<br/><br/><br/><br/>
 		<%= yield %>

@@ -1,0 +1,15 @@
+<h1>Edit ingredient</h1>
+<form action="/admin/editingr/<%= ingredient.id %>" method="post">
+	<table>
+		<tr>
+			<td>Ingredient name</td><td><input type="text" name="ingrname" value="<%=ingredient.name%>"></td>
+		</tr>
+		<tr>
+			<td>Extra price</td><td><input type="text" name="ingrprice" value="<%=ingredient.price.to_s("F")%>"></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Done"></td>
+		</tr>
+	</table>
+</form>

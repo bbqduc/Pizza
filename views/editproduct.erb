@@ -1,0 +1,16 @@
+<h1>Edit product</h1>
+<form action="/admin/edit/<%= product.id %>" method="post">
+	<table>
+		<tr>
+			<td>Product name</td><td><input type="text" name="productname" value="<%= product.name %>"></td>
+		</tr>
+		<tr>
+			<td>Product price</td><td><input type="text" name="productprice" value="<%= product.price.to_s("F")%>"></td>
+		</tr>
+		<%= erb(:ingredient_amounts, :layout => false, :locals => {:product => product, :prices => false}) %>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Done"></td>
+		</tr>
+	</table>
+</form>

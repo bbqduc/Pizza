@@ -1,0 +1,35 @@
+<form action="/profile/<%= customer.attributes[:username] %>" method="post">
+	<table>
+		<tr>
+			<td>Username</td>
+			<td><%= customer.attributes[:username] %></td>
+		</tr>
+		<tr>
+			<td>Old password</td>
+			<td><input type="password" name="oldpassword"></td>
+		</tr>
+		<tr>
+			<td>New password</td>
+			<td><input type="password" name="newpassword"></td>
+		</tr>
+		<tr>
+			<td>Name</td>
+			<td><input type="text" name="name" value="<%= customer.attributes[:name] %>"></td>
+		</tr>
+		<tr>
+			<td>Address</td>
+			<td><input type="text" name="address" value="<%= customer.attributes[:address] %>"></td>
+		</tr>
+		<tr>
+			<td>Phone</td>
+			<td><input type="text" name="phone" value="<%= customer.attributes[:phone] %>"></td>
+		</tr>
+
+		<tr>
+			<td></td><td><input type="submit" value="Change"></td>
+		</tr>
+	</table>
+</form>
+
+<h2>Orders</h2>
+<%= erb(:orders, :layout => false, :locals => { :orders => Order.all(:customer => customer, :order => [:orderDate.desc] ), :username => username } ) %>

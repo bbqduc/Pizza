@@ -1,7 +1,17 @@
 require './datamodel'
+require './cart'
 require 'digest/sha2'
 
+DataMapper::Model.raise_on_save_failure = true
+
 module Controller
+	def Controller.SetPassword(customer, password)
+		salt = '' 
+		64.times { salt << (i = Kernel.rand(62); i += ((i < 10) ? 48 : ((i < 36) ? 55 : 61 ))).chr }
+		hash = Digest::SHA512.hexdigest("#{password}:#{salt}")
+		customer.passhash = hash,
+		customer.salt = salt
+	end
 	def Controller.ValidateAdmin(name, password)
 		if name != 'admin'
 			return false
@@ -41,6 +51,7 @@ module Controller
 			:passhash => hash,
 			:salt => salt
 		}
+#		Controller.SetPassword(newcustomer, password)
 
 		return newcustomer.save
 	end
@@ -69,7 +80,8 @@ module Controller
 		newproduct = Product.new
 		newproduct.attributes = {
 			:name => name,
-			:price => price
+			:price => price,
+			:available => true
 		}
 		return newproduct.save
 	end
@@ -97,7 +109,8 @@ module Controller
 		ingredient = Ingredient.new
 		ingredient.attributes = {
 			:name => name,
-			:price => price
+			:price => price,
+			:available => true
 		}
 		return ingredient.save
 	end
@@ -123,5 +136,74 @@ module Controller
 		return Order.all(:conditions => ["delivery_date IS NOT NULL"], :order => [:orderDate.desc])
 	end
 
+	def Controller.getCartPrice(cart)
+		price = BigDecimal("0.0")
+		cart.get_product_ids.each_index do |i|
+			product = Product.get(cart.get_product_ids[i])
+			tempPrice = product.attributes[:price]
+			cart.get_extras[i].each do |j|
+				ingredient = Ingredient.get(j[0])
+				tempPrice += ingredient.attributes[:price] * Integer(j[1])
+			end
+			price += Integer(cart.get_product_amounts[i]) * tempPrice
+		end
+		return price
+	end
+
+	def Controller.orderCart(username, cart_string)
+		cart = Cart.new
+		cart.from_string(cart_string)
+		customer = Customer.first(:username => username)
+		orderprice = Controller.getCartPrice(cart)
+		order = Order.new
+		order.attributes = {
+			:customer => customer,
+			:orderDate => Time.now,
+			:totalPrice => orderprice
+		}
+		if orderprice == 0 then
+			return false
+		end
+		order.save
+
+		cart.get_product_ids.each_index do |i|
+			productamount = ProductAmount.new
+			product = Controller.getProductByID(cart.get_product_ids[i])
+			productamount.attributes = {
+				:order => order,
+				:product => product,
+				:amount => cart.get_product_amounts[i]
+			}
+			productamount.save
+			cart.get_extras[i].each do |j|
+				extra = Extra.new
+				ingredient = Ingredient.get(j[0])
+				extra.attributes = {
+					:ingredient => ingredient,
+					:product_amount => productamount,
+					:amount => j[1]
+				}
+				extra.save
+			end
+
+		end
+		return true
+	end
+
+	def Controller.getTimeString(time)
+		return time.strftime("%Y-%m-%d %T")
+	end
+
+	def Controller.stringToDate(string)
+		return DateTime.strptime(string, "%Y-%m-%d %T")
+	end
+
+	def Controller.getOrderByID(orderid)
+		return Order.get(orderid)
+	end
+	def Controller.setDeliveryDate(orderid, datestring)
+		order = Controller.getOrderByID(orderid)
+		order.update(:deliveryDate => Controller.stringToDate(datestring))
+	end
 
 end

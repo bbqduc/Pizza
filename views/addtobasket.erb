@@ -1,0 +1,21 @@
+<form action="/basket/add/<%= product.attributes[:id] %>" method="post">
+	<table>
+		<tr>
+			<td>Product</td><td>Price</td><td>Amount</td>
+		</tr>
+		<tr>
+			<td><%= product.attributes[:name] %></td>
+			<td><%= product.attributes[:price].to_s("F") %>$</td>
+			<td><input type="text" value="1" name="productamount"></td>
+		</tr>
+		<tr><td>Select Extras:</td></tr>
+		<tr>
+			<td>Ingredient</td><td>Price</td><td>Amount</td>
+		</tr>
+		<%= erb(:ingredient_amounts, :layout => false, :locals => {:product => nil, :prices => true}) %>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Done"></td>
+		</tr>
+	</table>
+</form>

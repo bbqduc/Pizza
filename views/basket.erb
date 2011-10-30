@@ -1,0 +1,34 @@
+<form action="/basket" method="post">
+	<table>
+		<% if cart.get_product_ids.empty? then %>
+			<tr><td>Your cart is empty.</td></tr>
+		<% else %>
+			<tr>
+				<td>Product</td><td>Extras</td><td>Amount</td>
+			</tr>
+			<% cart.get_product_ids.each_index do |i| %>
+				<% product = Controller.getProductByID(cart.get_product_ids[i]) %>
+				<tr>
+					<td><%= product.attributes[:name] %></td>
+					<td><% cart.get_extras[i].each do |extra| %>
+							<% if extra[1] > 1 then %>
+								<%= extra[1].to_s + "x" %>
+							<% end %>
+							<%= Ingredient.get(extra[0]).attributes[:name] %>
+						<% end %>
+					</td>
+					<td><input type="text" size=3 value="<%= cart.get_product_amounts[i].to_s %>" name="productamount<%=i%>"></td>
+				</tr>
+			<% end %>
+			<tr>
+				<td>Total</td>
+				<td><%= Controller.getCartPrice(cart).to_s("F") %>$</td>
+				<td><input type="submit" value="Update" name="buttonpressed"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><input type="submit" value="Order" name="buttonpressed"></td>
+			</tr>
+		<% end %>
+	</table>
+</form>

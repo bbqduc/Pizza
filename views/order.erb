@@ -1,12 +1,12 @@
 <tr>
-	<td><a href="/profile/<%= order.customer.attributes[:username] %>"><%= order.customer.attributes[:name] %></a></td>
-	<td><%= order.attributes[:orderDate] %></td>
-	<td><a href="/order/<%= order.attributes[:id] %>"<%= order.attributes[:totalPrice] %></a></td>
+	<td><a href="/profile/<%= order.customer.attributes[:username] %>"><%= order.customer.attributes[:username] %></a></td>
+	<td><%= Controller.getTimeString(order.attributes[:orderDate]) %></td>
+	<td><a href="/vieworder/<%= order.attributes[:id] %>"><%= order.attributes[:totalPrice].to_s("F") %>$</a></td>
 	<% if(order.attributes[:deliveryDate] != nil) then %>
-		<td><%= order.attributes[:deliveryDate] %></td>
+		<td><%= Controller.getTimeString(order.attributes[:deliveryDate]) %></td>
 	<% else %>
-		<% if(session[:name] == 'admin') then %>
-			<td><a href="/deliver/<%= order.attributes[:id] %>">Enter</a></td>
+		<% if(username == 'admin') then %>
+			<td><a href="/admin/deliver/<%= order.attributes[:id] %>">Enter</a></td>
 		<% end %>
 	<% end %>
 </tr>

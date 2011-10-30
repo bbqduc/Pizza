@@ -165,25 +165,45 @@ class PizzaPalvelu < Sinatra::Base
 	end
 
 	post '/basket' do
+		validinput = true
+
 		cart = Cart.new
 		cart.from_string(session[:basket])
 
 		cart.get_product_amounts.each_index do |i|
-			if Integer(params["productamount"+i.to_s]) > 0 then
-				cart.get_product_amounts[i] = params["productamount"+i.to_s]
-			else
-				cart.get_product_amounts.delete_at(i)
-				cart.get_extras.delete_at(i)
-				cart.get_product_ids.delete_at(i)
+			if !Controller.ValidateAmountString(params["productamount#{i.to_s}"])
+				validinput = false
 			end
 		end
 
-		session[:basket] = cart.to_string
+		if !Controller.ValidatePriceString(params[:productprice])
+			validinput = false
+		end
 
-		if params[:buttonpressed] == "Order" then
-			redirect '/order'
+		if !validinput then
+			if session[:name] != nil then
+				erb :displaymessage, :layout => :userlayout, :locals => {:username => session[:name], :message => "Invalid field entries detected!", :backlink => "/basket"}
+			else
+				erb :displaymessage, :locals => {:message => "Invalid field entries detected!", :backlink => "/basket"}
+			end
 		else
-			redirect '/basket'
+			cart.get_product_amounts.each_index do |i|
+				if Integer(params["productamount"+i.to_s]) > 0 then
+					cart.get_product_amounts[i] = params["productamount"+i.to_s]
+				else
+					cart.get_product_amounts.delete_at(i)
+					cart.get_extras.delete_at(i)
+					cart.get_product_ids.delete_at(i)
+				end
+			end
+
+			session[:basket] = cart.to_string
+
+			if params[:buttonpressed] == "Order" then
+				redirect '/order'
+			else
+				redirect '/basket'
+			end
 		end
 	end
 
@@ -254,11 +274,11 @@ class PizzaPalvelu < Sinatra::Base
 			session[:basket] = cart.to_string
 			redirect '/'
 
-		rescue TypeError
+		rescue
 			if session[:name] != nil then
 				erb :displaymessage, :locals => {:message => "Please type only numbers in the amount-fields!", :backlink => "/basket/add/#{params[:productid]}"}
 			else
-				erb :displaymessage, :layout => :userlayout, :locals => {:message => "Please type only numbers in the amount-fields!", :backlink => "/basket/add/#{params[:productid]}"}
+				erb :displaymessage, :layout => :userlayout, :locals => {:username => session[:name], :message => "Please type only numbers in the amount-fields!", :backlink => "/basket/add/#{params[:productid]}"}
 			end
 		end
 	end

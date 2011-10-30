@@ -216,7 +216,7 @@ module Controller
 		begin
 			order = Controller.getOrderByID(orderid)
 			order.update(:deliveryDate => Controller.stringToDate(datestring))
-		rescue ArgumentError
+		rescue 
 			return false
 		end
 		return true

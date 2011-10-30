@@ -5,11 +5,19 @@ require 'digest/sha2'
 DataMapper::Model.raise_on_save_failure = true
 
 module Controller
+	def Controller.ValidatePriceString(string)
+		match = /[0-9]+(\.[0-9]+)?/.match(string)
+		return match != nil && match[0] == string
+	end
+	def Controller.ValidateAmountString(string)
+		match = /[0-9]+/.match(string)
+		return match != nil && match[0] == string
+	end
 	def Controller.SetPassword(customer, password)
 		salt = '' 
 		64.times { salt << (i = Kernel.rand(62); i += ((i < 10) ? 48 : ((i < 36) ? 55 : 61 ))).chr }
 		hash = Digest::SHA512.hexdigest("#{password}:#{salt}")
-		customer.passhash = hash,
+		customer.passhash = hash
 		customer.salt = salt
 	end
 	def Controller.ValidateAdmin(name, password)
@@ -33,14 +41,19 @@ module Controller
 		end
 	end
 
+	def Controller.CheckValidUserInfo(username, password, name, address, phone)
+		if username.empty? or password.empty? or name.empty? or address.empty? or phone.empty? or !Controller.ValidateAmountString(phone)
+			return false
+		else
+			return true
+		end
+	end
+
 	def Controller.AddUser(username, password, name, address, phone)
 		user = Customer.first(:username => username)
-		if user != nil
+		if user != nil or !Controller.CheckValidUserInfo(username, password, name, address, phone) 
 			return false
 		end
-		salt = '' 
-		64.times { salt << (i = Kernel.rand(62); i += ((i < 10) ? 48 : ((i < 36) ? 55 : 61 ))).chr }
-		hash = Digest::SHA512.hexdigest("#{password}:#{salt}")
 
 		newcustomer = Customer.new
 		newcustomer.attributes = {
@@ -48,10 +61,8 @@ module Controller
 			:address => address,
 			:phone => phone,
 			:username => username,
-			:passhash => hash,
-			:salt => salt
 		}
-#		Controller.SetPassword(newcustomer, password)
+		Controller.SetPassword(newcustomer, password)
 
 		return newcustomer.save
 	end
@@ -202,8 +213,13 @@ module Controller
 		return Order.get(orderid)
 	end
 	def Controller.setDeliveryDate(orderid, datestring)
-		order = Controller.getOrderByID(orderid)
-		order.update(:deliveryDate => Controller.stringToDate(datestring))
+		begin
+			order = Controller.getOrderByID(orderid)
+			order.update(:deliveryDate => Controller.stringToDate(datestring))
+		rescue ArgumentError
+			return false
+		end
+		return true
 	end
 
 end

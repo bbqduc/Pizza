@@ -49,22 +49,40 @@ class PizzaPalvelu < Sinatra::Base
 			:price => params[:productprice],
 			:available => true
 		}
-		product.save
+		validinput = !params[:productname].empty?
+
 		ingredients = Controller.getIngredients
 
 		ingredients.each do |ingredient| 
-			amount = Integer(params["ingr_#{ingredient.attributes[:id]}"]) || 0
-			if(amount > 0) then
-				ingredient_amount = IngredientAmount.new
-				ingredient_amount.attributes = {
-					:product => product,
-					:ingredient => ingredient,
-					:amount => amount
-				}
-				ingredient_amount.save
+			if !Controller.ValidateAmountString(params["ingr_#{ingredient.attributes[:id]}"] || "0")
+				validinput = false
 			end
 		end
-		redirect '/admin/manage'
+
+		if !Controller.ValidatePriceString(params[:productprice])
+			validinput = false
+		end
+
+		if !validinput or !product.save then
+			erb :displaymessage, :layout => :adminlayout, :locals => {:message => "Invalid field entries detected!", :backlink => "/admin/edit/#{params[:productid]}"}
+		else
+
+			product.save
+
+			ingredients.each do |ingredient| 
+				amount = Integer(params["ingr_#{ingredient.attributes[:id]}"]) || 0
+				if(amount > 0) then
+					ingredient_amount = IngredientAmount.new
+					ingredient_amount.attributes = {
+						:product => product,
+						:ingredient => ingredient,
+						:amount => amount
+					}
+					ingredient_amount.save
+				end
+			end
+			redirect '/admin/manage'
+		end
 	end
 
 	get '/admin/addingr' do
@@ -72,12 +90,12 @@ class PizzaPalvelu < Sinatra::Base
 	end
 
 	post '/admin/addingr' do
-		if Controller.addIngredient(params[:ingrname], params[:ingrprice]) then
-			"Success!"
+		validinput = !params[:ingrname].empty? && Controller.ValidatePriceString(params[:ingrprice])
+		if !validinput or !Controller.addIngredient(params[:ingrname], params[:ingrprice]) then
+			erb :displaymessage, :layout => :adminlayout, :locals => {:message => "Invalid field entries detected!", :backlink => "/admin/editingr/#{params[:ingredientid]}"}
 		else
-			"Failure!"
+			redirect '/admin/manage'
 		end
-		redirect '/admin/manage'
 	end
 
 	get '/admin/manage' do 
@@ -94,7 +112,7 @@ class PizzaPalvelu < Sinatra::Base
 		if Controller.setDeliveryDate(params[:orderid], params[:deliverydate]) then
 			redirect '/admin/orders'
 		else
-			"FAIL!"
+			erb :displaymessage, :layout => :adminlayout, :locals => {:message => "Invalid Date string!", :backlink => "/admin/deliver/#{params[:orderid]}"}
 		end
 	end
 
@@ -110,12 +128,11 @@ class PizzaPalvelu < Sinatra::Base
 
 	post '/register' do
 		if Controller.AddUser(params[:username], params[:password], params[:name], params[:address], params[:phone]) then
-			"Success!"
-		else
-			"Failure!"
+			session[:name] = params[:username]
+			erb :displaymessage, :layout => :userlayout, :locals => {:username => session[:name], :message => "Success!", :backlink => "/"}
+		else	
+			erb :displaymessage, :locals => {:message => "Failure!", :backlink => "/register"}
 		end
-
-		redirect '/'
 	end
 
 	get '/login' do
@@ -127,7 +144,7 @@ class PizzaPalvelu < Sinatra::Base
 			session[:name] = params[:username]
 			redirect '/'
 		else
-			"Invalid username or password!"
+			erb :displaymessage, :locals => {:message => "Invalid username or password!", :backlink => "/register"}
 		end
 	end
 
@@ -179,8 +196,7 @@ class PizzaPalvelu < Sinatra::Base
 					session[:basket] = ""
 					redirect "/profile/#{session[:name]}"
 				else
-					"Ordering failed!
-				<a href='/basket'>Back</a>"
+					erb :displaymessage, :locals => {:message => "Ordering failed!", :backlink => "/basket"}
 				end
 			else
 				redirect '/admin'
@@ -225,17 +241,26 @@ class PizzaPalvelu < Sinatra::Base
 		cart.from_string(session[:basket])
 		extras = []
 
-		ingredients = Controller.getIngredients
-		ingredients.each do |ingredient| 
-			amount = Integer(params["ingr_#{ingredient.attributes[:id]}"]) || 0
-			if(amount > 0) then
-				extras.push(Array[ Integer(ingredient.attributes[:id]), amount])
+		begin
+			ingredients = Controller.getIngredients
+			ingredients.each do |ingredient| 
+				amount = Integer (params["ingr_#{ingredient.attributes[:id]}"] || 0)
+				if(amount > 0) then
+					extras.push(Array[ Integer(ingredient.attributes[:id]), amount])
+				end
+			end
+			productamount = Integer(params[:productamount])
+			cart.add_product_amount(params[:productid], productamount, extras)
+			session[:basket] = cart.to_string
+			redirect '/'
+
+		rescue TypeError
+			if session[:name] != nil then
+				erb :displaymessage, :locals => {:message => "Please type only numbers in the amount-fields!", :backlink => "/basket/add/#{params[:productid]}"}
+			else
+				erb :displaymessage, :layout => :userlayout, :locals => {:message => "Please type only numbers in the amount-fields!", :backlink => "/basket/add/#{params[:productid]}"}
 			end
 		end
-
-		cart.add_product_amount(params[:productid], params[:productamount], extras)
-		session[:basket] = cart.to_string
-		redirect '/'
 	end
 
 	get '/profile/:username' do
@@ -255,22 +280,26 @@ class PizzaPalvelu < Sinatra::Base
 			redirect '/'
 		end
 
+		backlink = "/profile/#{params[:username]}"
 		if session[:name] != 'admin' && Controller.ValidateUser(params[:username], params[:oldpassword]) then
 			customer = Controller.getCustomerByUserName(params[:username])
 			if customer == nil
 				redirect '/'
 			end
-			customer.name = params[:name]
-			customer.address = params[:address]
-			customer.phone = params[:phone]
-			if not params[:newpassword].empty?
-				Controller.setPassword(customer, params[:newpassword])
+			if !Controller.CheckValidUserInfo(session[:name], params[:oldpassword], params[:name], params[:address], params[:phone])
+				erb :displaymessage, :locals => {:message => "Invalid field entries detected!", :backlink => backlink} 
+			else
+				customer.name = params[:name]
+				customer.address = params[:address]
+				customer.phone = params[:phone]
+				if not params[:newpassword].empty?
+					Controller.setPassword(customer, params[:newpassword])
+				end
+				customer.save
+				redirect backlink
 			end
-			customer.save
-			redirect "/profile/#{params[:username]}"
 		else
-			"Password incorrect!
-			<a href='/profile/#{params[:username]}'>Back</a>"
+			erb :displaymessage, :locals => {:message => "Old password was incorrect!", :backlink => backlink}
 		end
 
 	end
@@ -286,43 +315,56 @@ class PizzaPalvelu < Sinatra::Base
 	end
 
 	post '/admin/edit/:productid' do
-		product = Product.get(params[:productid])
-		if product == nil then
-			redirect '/admin/manage'
-		end
 
-		if not params[:productname].empty?
-			product.name = params[:productname]
-		end
-
-		if not params[:productname].empty?
-			product.price = params[:productprice]
-		end
-
-		product.save
+		validinput = !params[:productname].empty?
 
 		ingredients = Controller.getIngredients
 
 		ingredients.each do |ingredient| 
-			amount = Integer(params["ingr_#{ingredient.attributes[:id]}"]) || 0
-			ingredient_amount = IngredientAmount.first(:product => product, :ingredient => ingredient)
-			if(amount > 0) then
-				ingredient_amount ||= IngredientAmount.new
-				ingredient_amount.attributes = {
-					:product => product,
-					:ingredient => ingredient,
-					:amount => amount
-				}
-				ingredient_amount.save
-			else
-				if ingredient_amount != nil then
-					ingredient_amount.destroy
-				end
+			if !Controller.ValidateAmountString(params["ingr_#{ingredient.attributes[:id]}"] || "0")
+				validinput = false
 			end
-			
 		end
 
-		redirect '/admin/manage'
+		if !Controller.ValidatePriceString(params[:productprice])
+			validinput = false
+		end
+
+		if !validinput then
+			erb :displaymessage, :layout => :adminlayout, :locals => {:message => "Invalid field entries detected!", :backlink => "/admin/edit/#{params[:productid]}"}
+		else
+
+			product = Product.get(params[:productid])
+			if product == nil then
+				redirect '/admin/manage'
+			end
+
+			product.name = params[:productname]
+			product.price = params[:productprice]
+
+			product.save
+
+			ingredients.each do |ingredient| 
+				amount = Integer(params["ingr_#{ingredient.attributes[:id]}"]) || 0
+				ingredient_amount = IngredientAmount.first(:product => product, :ingredient => ingredient)
+				if(amount > 0) then
+					ingredient_amount ||= IngredientAmount.new
+					ingredient_amount.attributes = {
+						:product => product,
+						:ingredient => ingredient,
+						:amount => amount
+					}
+					ingredient_amount.save
+				else
+					if ingredient_amount != nil then
+						ingredient_amount.destroy
+					end
+				end
+
+			end
+
+			redirect '/admin/manage'
+		end
 	end
 
 	get '/admin/editingr/:ingredientid' do
@@ -340,15 +382,15 @@ class PizzaPalvelu < Sinatra::Base
 			redirect '/admin/manage'
 		end
 
-		if not params[:ingrname].empty?
+		validinput = !params[:ingrname].empty? && Controller.ValidatePriceString(params[:ingrprice])
+		if !validinput then
+			erb :displaymessage, :layout => :adminlayout, :locals => {:message => "Invalid field entries detected!", :backlink => "/admin/editingr/#{params[:ingredientid]}"}
+		else
 			ingredient.name = params[:ingrname]
-		end
-
-		if not params[:ingrprice].empty?
 			ingredient.price = params[:ingrprice]
+			ingredient.save
+			redirect '/admin/manage'
 		end
-
-		product.save
 	end
 
 	get '/admin/toggleavail/:productid' do

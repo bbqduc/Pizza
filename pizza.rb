@@ -297,7 +297,7 @@ class PizzaPalvelu < Sinatra::Base
 		end
 
 		backlink = "/profile/#{params[:username]}"
-		if session[:name] != 'admin' && Controller.ValidateUser(params[:username], params[:oldpassword]) then
+		if session[:name] == 'admin' || Controller.ValidateUser(params[:username], params[:oldpassword]) then
 			customer = Controller.getCustomerByUserName(params[:username])
 			if customer == nil
 				redirect '/'

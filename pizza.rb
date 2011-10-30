@@ -309,7 +309,7 @@ class PizzaPalvelu < Sinatra::Base
 				customer.address = params[:address]
 				customer.phone = params[:phone]
 				if not params[:newpassword].empty?
-					Controller.setPassword(customer, params[:newpassword])
+					Controller.SetPassword(customer, params[:newpassword])
 				end
 				customer.save
 				redirect backlink
